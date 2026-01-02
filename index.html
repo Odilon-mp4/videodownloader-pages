@@ -48,6 +48,8 @@
       padding: 10px;
       border-radius: 4px;
       font-size: 14px;
+      max-height: 200px;
+      overflow: auto;
     }
   </style>
 </head>
@@ -68,6 +70,11 @@
       const resultado = document.getElementById("resultado");
       const url = document.getElementById("videoUrl").value;
 
+      if (!url) {
+        resultado.textContent = "Cole uma URL válida.";
+        return;
+      }
+
       resultado.textContent = "Processando...";
 
       try {
@@ -82,11 +89,15 @@
           }
         );
 
+        if (!response.ok) {
+          throw new Error("Erro HTTP " + response.status);
+        }
+
         const data = await response.json();
         resultado.textContent = JSON.stringify(data, null, 2);
 
       } catch (e) {
-        resultado.textContent = "Erro ao chamar a API";
+        resultado.textContent = "Erro ao chamar a API:\n" + e.message;
       }
     }
   </script>
