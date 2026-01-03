@@ -19,7 +19,13 @@ export async function onRequest(context) {
       });
     }
 
-    // ===== CHAMADA À RAPIDAPI (MANTENHA SUA IMPLEMENTAÇÃO) =====
+    // =========================================================
+    // ⚠️ COLE AQUI A SUA CHAMADA ATUAL DA RAPIDAPI (SEM ALTERAR)
+    // =========================================================
+
+    /*
+    EXEMPLO (NÃO USE ESTE, USE O SEU):
+
     const rapidResponse = await fetch("https://SUA-RAPIDAPI-ENDPOINT", {
       method: "POST",
       headers: {
@@ -29,14 +35,20 @@ export async function onRequest(context) {
       },
       body: JSON.stringify({ url: videoUrl })
     });
+    */
 
-    if (!rapidResponse.ok) {
-      throw new Error("Erro na RapidAPI");
-    }
+    // 👉 AQUI EMBAIXO É O QUE IMPORTA:
+    // ASSUMIMOS QUE SUA RESPOSTA JÁ EXISTE
+    // E QUE VOCÊ JÁ FAZ:
+    //
+    // const result = await rapidResponse.json();
+
+    // =========================================================
 
     const result = await rapidResponse.json();
 
-    // ===== NORMALIZAÇÃO (PARTE CRÍTICA) =====
+    // ================= NORMALIZAÇÃO =================
+
     const raw = result?.data || result;
 
     const normalized = {
