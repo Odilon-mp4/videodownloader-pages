@@ -2,6 +2,18 @@ export async function onRequest(context) {
   try {
     const { request } = context;
 
+    // ✅ CORREÇÃO: responder preflight CORS
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type"
+        }
+      });
+    }
+
     if (request.method !== "POST") {
       return new Response("Method Not Allowed", { status: 405 });
     }
@@ -19,7 +31,7 @@ export async function onRequest(context) {
       });
     }
 
-    // ===== CHAMADA REAL DA RAPIDAPI (CONFIRMADA) =====
+    // ===== CHAMADA REAL DA RAPIDAPI =====
     const rapidResponse = await fetch(
       "https://social-download-all-in-one.p.rapidapi.com/v1/social/autolink",
       {
@@ -39,7 +51,7 @@ export async function onRequest(context) {
 
     const result = await rapidResponse.json();
 
-    // ===== NORMALIZAÇÃO FINAL =====
+    // ===== NORMALIZAÇÃO =====
     const raw = result?.data || result;
 
     const normalized = {
