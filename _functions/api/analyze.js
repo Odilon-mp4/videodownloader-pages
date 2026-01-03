@@ -1,23 +1,18 @@
-export async function onRequest(context) {
+// ===== OPTIONS (CORS preflight) =====
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    }
+  });
+}
+
+// ===== POST =====
+export async function onRequestPost({ request }) {
   try {
-    const { request } = context;
-
-    // ✅ CORREÇÃO: responder preflight CORS
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type"
-        }
-      });
-    }
-
-    if (request.method !== "POST") {
-      return new Response("Method Not Allowed", { status: 405 });
-    }
-
     const body = await request.json();
     const videoUrl = body.url;
 
