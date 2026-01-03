@@ -18,7 +18,7 @@ async function analisar() {
   downloadsEl.innerHTML = "";
 
   try {
-    const response = await fetch("/api/analyze", {
+    const response = await fetch("https://video-api.odilonufs007.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url })
