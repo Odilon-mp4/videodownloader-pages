@@ -1,20 +1,22 @@
-// ===== OPTIONS (CORS preflight) =====
-export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
-    }
-  });
-}
-
-// ===== POST =====
-export async function onRequestPost({ request }) {
+export async function onRequest({ request }) {
   try {
-    const body = await request.json();
-    const videoUrl = body.url;
+    // ===== CORS =====
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type"
+        }
+      });
+    }
+
+    // ⚠️ NÃO BLOQUEIE MÉTODO AQUI
+    // Deixe o Pages passar o POST normalmente
+
+    const body = await request.json().catch(() => null);
+    const videoUrl = body?.url;
 
     if (!videoUrl) {
       return new Response(JSON.stringify({ error: "URL não fornecida" }), {
@@ -26,7 +28,7 @@ export async function onRequestPost({ request }) {
       });
     }
 
-    // ===== CHAMADA REAL DA RAPIDAPI =====
+    // ===== RAPIDAPI =====
     const rapidResponse = await fetch(
       "https://social-download-all-in-one.p.rapidapi.com/v1/social/autolink",
       {
@@ -41,7 +43,16 @@ export async function onRequestPost({ request }) {
     );
 
     if (!rapidResponse.ok) {
-      throw new Error("Erro na RapidAPI");
+      return new Response(
+        JSON.stringify({ error: "Erro RapidAPI", status: rapidResponse.status }),
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+          }
+        }
+      );
     }
 
     const result = await rapidResponse.json();
@@ -53,18 +64,16 @@ export async function onRequestPost({ request }) {
       title: raw?.title || "",
       thumbnail: raw?.thumbnail || "",
       source: raw?.source || "",
-      medias: []
+      medias: Array.isArray(raw?.medias)
+        ? raw.medias
+            .filter(m => m?.url)
+            .map(m => ({
+              url: m.url,
+              quality: m.quality || "",
+              type: m.type || ""
+            }))
+        : []
     };
-
-    if (Array.isArray(raw?.medias)) {
-      normalized.medias = raw.medias
-        .filter(m => m && m.url)
-        .map(m => ({
-          url: m.url,
-          quality: m.quality || "",
-          type: m.type || ""
-        }));
-    }
 
     return new Response(JSON.stringify(normalized), {
       headers: {
