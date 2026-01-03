@@ -18,21 +18,17 @@ async function analisar() {
   downloadsEl.innerHTML = "";
 
   try {
-    const response = await fetch(
-      "https://video-api.odilonufs007.workers.dev/api/analyze",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
-      }
-    );
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
 
     if (!response.ok) {
       throw new Error("Erro HTTP " + response.status);
     }
 
-    const json = await response.json();
-    const data = json.data;
+    const data = await response.json();
 
     titleEl.textContent = data.title || "Sem título";
     thumbEl.src = data.thumbnail;
