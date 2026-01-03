@@ -19,36 +19,27 @@ export async function onRequest(context) {
       });
     }
 
-    // =========================================================
-    // ⚠️ COLE AQUI A SUA CHAMADA ATUAL DA RAPIDAPI (SEM ALTERAR)
-    // =========================================================
+    // ===== CHAMADA REAL DA RAPIDAPI (CONFIRMADA) =====
+    const rapidResponse = await fetch(
+      "https://social-download-all-in-one.p.rapidapi.com/v1/social/autolink",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-RapidAPI-Key": "c4ea9e070dmshe70fcb1386c9a9p184528jsncc1d519cfa30",
+          "X-RapidAPI-Host": "social-download-all-in-one.p.rapidapi.com"
+        },
+        body: JSON.stringify({ url: videoUrl })
+      }
+    );
 
-    /*
-    EXEMPLO (NÃO USE ESTE, USE O SEU):
-
-    const rapidResponse = await fetch("https://SUA-RAPIDAPI-ENDPOINT", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-RapidAPI-Key": "SUA_API_KEY",
-        "X-RapidAPI-Host": "SUA_API_HOST"
-      },
-      body: JSON.stringify({ url: videoUrl })
-    });
-    */
-
-    // 👉 AQUI EMBAIXO É O QUE IMPORTA:
-    // ASSUMIMOS QUE SUA RESPOSTA JÁ EXISTE
-    // E QUE VOCÊ JÁ FAZ:
-    //
-    // const result = await rapidResponse.json();
-
-    // =========================================================
+    if (!rapidResponse.ok) {
+      throw new Error("Erro na RapidAPI");
+    }
 
     const result = await rapidResponse.json();
 
-    // ================= NORMALIZAÇÃO =================
-
+    // ===== NORMALIZAÇÃO FINAL =====
     const raw = result?.data || result;
 
     const normalized = {
