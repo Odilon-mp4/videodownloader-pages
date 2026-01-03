@@ -1,29 +1,36 @@
-document.getElementById("analyzeBtn").addEventListener("click", async () => {
+document.getElementById("analyzeBtn").addEventListener("click", analisar);
+
+async function analisar() {
+  const resultado = document.getElementById("resultado");
   const url = document.getElementById("videoUrl").value;
+
   if (!url) {
-    alert("Cole um link de vídeo");
+    resultado.textContent = "Cole uma URL válida.";
     return;
   }
 
-  const res = await fetch("/api/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url })
-  });
+  resultado.textContent = "Processando...";
 
-  const data = await res.json();
+  try {
+    const response = await fetch(
+      "https://video-api.odilonufs007.workers.dev/api/analyze",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url })
+      }
+    );
 
-  document.getElementById("title").innerText = data.title;
-  document.getElementById("thumbnail").src = data.thumbnail;
+    if (!response.ok) {
+      throw new Error("Erro HTTP " + response.status);
+    }
 
-  const downloads = document.getElementById("downloads");
-  downloads.innerHTML = "";
+    const data = await response.json();
+    resultado.textContent = JSON.stringify(data, null, 2);
 
-  data.medias.forEach(media => {
-    const a = document.createElement("a");
-    a.href = media.url;
-    a.target = "_blank";
-    a.innerText = `${media.quality} - ${media.type}`;
-    downloads.appendChild(a);
-  });
-});
+  } catch (e) {
+    resultado.textContent = "Erro ao chamar a API:\n" + e.message;
+  }
+}
