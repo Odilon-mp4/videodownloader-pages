@@ -13,8 +13,10 @@ async function analisar() {
     return;
   }
 
+  // Reset UI
   resultado.style.display = "none";
   titleEl.textContent = "";
+  thumbEl.src = "";
   downloadsEl.innerHTML = "";
 
   try {
@@ -39,24 +41,30 @@ async function analisar() {
       return;
     }
 
+    // Criar botões de download com página intermediária
     data.medias.forEach(media => {
-      const btn = document.createElement("a");
-      btn.href = media.url;
-      btn.target = "_blank";
-      btn.style.display = "block";
-      btn.style.marginTop = "8px";
-      btn.style.padding = "10px";
-      btn.style.background = "#4f46e5";
-      btn.style.color = "#fff";
-      btn.style.textAlign = "center";
-      btn.style.borderRadius = "4px";
-      btn.style.textDecoration = "none";
+      const btn = document.createElement("button");
 
       const label = [];
       if (media.quality) label.push(media.quality);
       if (media.type) label.push(media.type);
 
       btn.textContent = "Download " + label.join(" ");
+
+      btn.style.display = "block";
+      btn.style.marginTop = "8px";
+      btn.style.padding = "10px";
+      btn.style.background = "#4f46e5";
+      btn.style.color = "#fff";
+      btn.style.border = "none";
+      btn.style.borderRadius = "4px";
+      btn.style.cursor = "pointer";
+      btn.style.fontSize = "14px";
+
+      btn.addEventListener("click", () => {
+        const encodedUrl = encodeURIComponent(media.url);
+        window.location.href = `/download.html?url=${encodedUrl}`;
+      });
 
       downloadsEl.appendChild(btn);
     });
