@@ -2,73 +2,167 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Video Downloader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>OGT Downloader – Ferramenta do OGT Translate</title>
+  <meta name="description" content="OGT Downloader é uma ferramenta de apoio do OGT Translate para acesso a vídeos disponíveis publicamente, com uso responsável e informativo.">
+
+  <!-- Fonte padrão OGT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* Reset básico */
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: #fff;
+      font-family: 'Inter', Arial, sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
     }
 
     .container {
-      background: #1c1c1c;
-      padding: 24px;
+      background: #ffffff;
+      padding: 28px;
       border-radius: 8px;
-      width: 420px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 20px;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 4px;
-      border: none;
+      padding: 12px;
+      margin-bottom: 14px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
     }
 
     button {
       width: 100%;
-      padding: 10px;
-      background: #4f46e5;
-      color: #fff;
+      padding: 12px;
+      background-color: #2563eb;
+      color: #ffffff;
       border: none;
-      border-radius: 4px;
-      font-size: 16px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 500;
       cursor: pointer;
     }
 
+    button:hover {
+      background-color: #1d4ed8;
+    }
+
     #resultado {
-      margin-top: 16px;
+      margin-top: 20px;
     }
 
     #thumbnail {
       width: 100%;
       border-radius: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    #title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    #downloads a {
+      display: block;
+      margin-bottom: 8px;
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    #downloads a:hover {
+      text-decoration: underline;
+    }
+
+    .legal-warning {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    footer a {
+      color: #6b7280;
+      text-decoration: none;
+      margin: 0 6px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
-    <h2>Video Downloader</h2>
+    <h1>OGT Downloader</h1>
+    <div class="subtitle">
+      Ferramenta de apoio do OGT Translate para acesso a vídeos disponíveis publicamente
+    </div>
 
     <input id="videoUrl" placeholder="Cole a URL do vídeo">
 
     <button id="analyzeBtn">Analisar</button>
 
     <div id="resultado" style="display:none;">
-      <img id="thumbnail">
+      <img id="thumbnail" alt="">
       <h3 id="title"></h3>
       <div id="downloads"></div>
     </div>
+
+    <div class="legal-warning">
+      <strong>Aviso importante:</strong><br>
+      O OGT Downloader é uma ferramenta de apoio técnico do site OGT Translate.
+      Este site não hospeda, não armazena e não distribui vídeos ou mídias de terceiros.
+      O uso da ferramenta é de responsabilidade exclusiva do usuário, que deve respeitar
+      os direitos autorais e os termos de uso das plataformas de origem.
+    </div>
+
+    <footer>
+      <a href="https://www.ogttranslate.com/sobre">Sobre</a> |
+      <a href="https://www.ogttranslate.com/politica-de-privacidade">Privacidade</a> |
+      <a href="https://www.ogttranslate.com/termos-de-uso">Termos</a> |
+      <a href="https://www.ogttranslate.com/contato">Contato</a>
+    </footer>
   </div>
 
+  <!-- Script do downloader (NÃO ALTERADO) -->
   <script src="script.js"></script>
+
 </body>
 </html>
