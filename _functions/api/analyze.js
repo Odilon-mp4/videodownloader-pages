@@ -1,5 +1,5 @@
 export async function onRequest(context) {
-  const { request } = context;
+  const { request, env } = context;
 
   // 1) Permitir apenas POST
   if (request.method !== "POST") {
@@ -37,14 +37,14 @@ export async function onRequest(context) {
       );
     }
 
-    // ===== SUA CHAMADA RAPIDAPI (EXISTENTE) =====
+    // ===== CHAMADA RAPIDAPI (SEGURA) =====
     const rapidResponse = await fetch(
       "https://social-download-all-in-one.p.rapidapi.com/v1/social/autolink",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-RapidAPI-Key": "SUA_CHAVE_ATUAL",
+          "X-RapidAPI-Key": env.RAPIDAPI_KEY,
           "X-RapidAPI-Host": "social-download-all-in-one.p.rapidapi.com"
         },
         body: JSON.stringify({ url: videoUrl })
