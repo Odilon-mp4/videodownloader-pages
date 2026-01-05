@@ -1,41 +1,50 @@
-export async function onRequest({ request }) {
+export async function onRequest(context) {
+  const { request } = context;
+
+  // 1) Permitir apenas POST
+  if (request.method !== "POST") {
+    return new Response("Method Not Allowed", { status: 405 });
+  }
+
+  // 2) Validar Origin / Referer
+  const origin = request.headers.get("Origin") || "";
+  const referer = request.headers.get("Referer") || "";
+
+  const allowedOrigins = [
+    "https://videodownloader-pages.pages.dev",
+    "https://www.ogttranslate.com"
+  ];
+
+  const isAllowed = allowedOrigins.some(o =>
+    origin.startsWith(o) || referer.startsWith(o)
+  );
+
+  if (!isAllowed) {
+    return new Response(
+      JSON.stringify({ error: "Origem não autorizada" }),
+      { status: 403, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   try {
-    // ===== CORS =====
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type"
-        }
-      });
-    }
-
-    // ⚠️ NÃO BLOQUEIE MÉTODO AQUI
-    // Deixe o Pages passar o POST normalmente
-
-    const body = await request.json().catch(() => null);
-    const videoUrl = body?.url;
+    const body = await request.json();
+    const videoUrl = body.url;
 
     if (!videoUrl) {
-      return new Response(JSON.stringify({ error: "URL não fornecida" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
-      });
+      return new Response(
+        JSON.stringify({ error: "URL não fornecida" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    // ===== RAPIDAPI =====
+    // ===== SUA CHAMADA RAPIDAPI (EXISTENTE) =====
     const rapidResponse = await fetch(
       "https://social-download-all-in-one.p.rapidapi.com/v1/social/autolink",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-RapidAPI-Key": "c4ea9e070dmshe70fcb1386c9a9p184528jsncc1d519cfa30",
+          "X-RapidAPI-Key": "SUA_CHAVE_ATUAL",
           "X-RapidAPI-Host": "social-download-all-in-one.p.rapidapi.com"
         },
         body: JSON.stringify({ url: videoUrl })
@@ -43,16 +52,7 @@ export async function onRequest({ request }) {
     );
 
     if (!rapidResponse.ok) {
-      return new Response(
-        JSON.stringify({ error: "Erro RapidAPI", status: rapidResponse.status }),
-        {
-          status: 502,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
-          }
-        }
-      );
+      throw new Error("Erro na RapidAPI");
     }
 
     const result = await rapidResponse.json();
@@ -66,7 +66,7 @@ export async function onRequest({ request }) {
       source: raw?.source || "",
       medias: Array.isArray(raw?.medias)
         ? raw.medias
-            .filter(m => m?.url)
+            .filter(m => m && m.url)
             .map(m => ({
               url: m.url,
               quality: m.quality || "",
@@ -78,20 +78,14 @@ export async function onRequest({ request }) {
     return new Response(JSON.stringify(normalized), {
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": allowedOrigins[0]
       }
     });
 
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err.message }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
-      }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
